@@ -13,10 +13,10 @@ namespace eosio {
          bool is_privileged( uint64_t account );
 
          __attribute__((eosio_wasm_import))
-         void get_resource_limits( uint64_t account, int64_t* ram_bytes, int64_t* net_weight, int64_t* cpu_weight );
+         void get_resource_limits( uint64_t account, uint64_t* gas, bool* is_unlimited );
 
          __attribute__((eosio_wasm_import))
-         void set_resource_limits( uint64_t account, int64_t ram_bytes, int64_t net_weight, int64_t cpu_weight );
+         void set_resource_limits( uint64_t account, uint64_t gas, bool is_unlimited );
 
          __attribute__((eosio_wasm_import))
          void set_privileged( uint64_t account, bool is_priv );
@@ -191,21 +191,21 @@ namespace eosio {
     *  @param net_weight - output to hold net limit
     *  @param cpu_weight - output to hold cpu limit
     */
-   inline void get_resource_limits( name account, int64_t& ram_bytes, int64_t& net_weight, int64_t& cpu_weight ) {
-      internal_use_do_not_use::get_resource_limits( account.value, &ram_bytes, &net_weight, &cpu_weight );
+   inline void get_resource_limits( name account, uint64_t& gas, bool& is_unlimited ) {
+      internal_use_do_not_use::get_resource_limits( account.value, &gas, &is_unlimited );
    }
 
    /**
-    *  Set the resource limits of an account
+    * Set the resource limits of an account.
     *
-    *  @ingroup privileged
-    *  @param account - name of the account whose resource limit to be set
-    *  @param ram_bytes - ram limit in absolute bytes
-    *  @param net_weight - fractionally proportionate net limit of available resources based on (weight / total_weight_of_all_accounts)
-    *  @param cpu_weight - fractionally proportionate cpu limit of available resources based on (weight / total_weight_of_all_accounts)
-    */
-   inline void set_resource_limits( name account, int64_t ram_bytes, int64_t net_weight, int64_t cpu_weight ) {
-      internal_use_do_not_use::set_resource_limits( account.value, ram_bytes, net_weight, cpu_weight );
+    * @ingroup privileged
+    *
+    * @param account - name of the account whose resource limit to be set.
+    * @param gas - available gas limit.
+    * @param is_unlimited - Whether the account has unlimited resources.
+   */
+   inline void set_resource_limits( name account, uint64_t gas, bool is_unlimited ) {
+      internal_use_do_not_use::set_resource_limits( account.value, gas, is_unlimited );
    }
 
    /**

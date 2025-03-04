@@ -1,7 +1,7 @@
 /*  host functions which are not allowed to use in read only query contract, so the functions should never return true. it should compile failed (compile time)  or throw exception(run time).
 set_resource_limits : yes
 set_wasm_parameters_packed : yes
-set_resource_limit : yes 
+set_resource_limit : yes
 set_proposed_producers : yes
 set_proposed_producers_ex : yes
 set_blockchain_parameters_packed : yes
@@ -64,29 +64,27 @@ extern "C" __attribute__((eosio_wasm_import)) void send_context_free_inline(char
 class [[eosio::contract]] host_functions_tests : public eosio::contract {
 public:
    using contract::contract;
-    
+
    ACTION_TYPE
    bool resource() {
-      int64_t ram_bytes;
-      int64_t net_weight;
-      int64_t cpu_weight;
-      get_resource_limits( "eosio"_n, ram_bytes, net_weight,  cpu_weight ) ;
-      eosio::cout << "Get resource: ram_bytes=" << ram_bytes << " net_weight=" << net_weight << " cpu_weight=" << cpu_weight << " \n";
-      set_resource_limits( "eosio"_n, ram_bytes  , net_weight  ,  cpu_weight );
-      get_resource_limits( "eosio"_n, ram_bytes, net_weight,  cpu_weight ) ;
-      eosio::cout << "Get resource: ram_bytes=" << ram_bytes << " net_weight=" << net_weight << " cpu_weight=" << cpu_weight << " \n";
+      uint64_t gas;
+      bool is_unlimited;
+      get_resource_limits( "eosio"_n, gas, is_unlimited ) ;
+      eosio::cout << "Get resource: gas=" << gas << " is_unlimited=" << is_unlimited << " \n";
+      set_resource_limits( "eosio"_n, gas, is_unlimited );
+      get_resource_limits( "eosio"_n, gas, is_unlimited ) ;
+      eosio::cout << "Get resource: gas=" << gas << " is_unlimited=" << is_unlimited << " \n";
       return true;
    }
    ACTION_TYPE
    bool setrelimit () {
-      int64_t ram_bytes;
-      int64_t net_weight;
-      int64_t cpu_weight;
-      get_resource_limits( "eosio"_n, ram_bytes, net_weight,  cpu_weight ) ;
-      eosio::cout << "Get resource: ram_bytes=" << ram_bytes << " net_weight=" << net_weight << " cpu_weight=" << cpu_weight << " \n";
-      set_resource_limit( "eosio"_n.value, "ram"_n.value  , ram_bytes );
-      get_resource_limits( "eosio"_n, ram_bytes, net_weight,  cpu_weight ) ;
-      eosio::cout << "Get resource: ram_bytes=" << ram_bytes << " net_weight=" << net_weight << " cpu_weight=" << cpu_weight << " \n";
+      uint64_t gas;
+      bool is_unlimited;
+      get_resource_limits( "eosio"_n, gas, is_unlimited ) ;
+      eosio::cout << "Get resource: gas=" << gas << " is_unlimited=" << is_unlimited << " \n";
+      set_resource_limit( "eosio"_n.value, "gas"_n.value  , gas );
+      get_resource_limits( "eosio"_n, gas, is_unlimited ) ;
+      eosio::cout << "Get resource: gas=" << gas << " is_unlimited=" << is_unlimited << " \n";
       return true;
    }
    ACTION_TYPE
@@ -94,19 +92,19 @@ public:
       char buf[sizeof(eosio::blockchain_parameters)];
       size_t size = get_blockchain_parameters_packed( buf, sizeof(buf) );
       eosio::cout << "Block chain parameter size : " << size << "\n";
-      set_blockchain_parameters_packed(buf, size); 
+      set_blockchain_parameters_packed(buf, size);
       return true;
    }
    ACTION_TYPE
    bool setpriv() {
       bool ispr = is_privileged("eosio"_n);
       eosio::cout << "eosio is privileged : " << ispr << "\n";
-      set_privileged("eosio"_n, ispr);      
+      set_privileged("eosio"_n, ispr);
       return true;
    }
 /*  all tested
-db_store_i64 
-db_update_i64 
+db_store_i64
+db_update_i64
 db_remove_i64
 db_idx64_store
 db_idx64_update
@@ -247,7 +245,7 @@ db_idx_long_double_remove
       return true;
    }
    ACTION_TYPE
-   bool sendcfiil(){     
+   bool sendcfiil(){
       send_context_free_inline(NULL, 0);
       return true;
    }

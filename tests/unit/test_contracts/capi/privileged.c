@@ -3,8 +3,8 @@
 #include <stdint.h>
 
 void test_privileged( void ) {
-   get_resource_limits(0, NULL, NULL, NULL);
-   set_resource_limits(0, 0, 0, 0);
+   get_resource_limits(0, NULL, NULL);
+   set_resource_limits(0, 0, false);
    set_proposed_producers(NULL, 0);
    set_proposed_producers_ex(0, NULL, 0);
    is_privileged(0);

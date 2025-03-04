@@ -16,11 +16,11 @@
 // Boilerplate
 using namespace eosio::native;
 extern "C" {
-   void get_resource_limits( capi_name account, int64_t* ram_bytes, int64_t* net_weight, int64_t* cpu_weight ) {
-      return intrinsics::get().call<intrinsics::get_resource_limits>(account, ram_bytes, net_weight, cpu_weight);
+   void get_resource_limits( capi_name account, uint64_t* gas, bool* is_unlimited ) {
+      return intrinsics::get().call<intrinsics::get_resource_limits>(account, gas, is_unlimited);
    }
-   void set_resource_limits( capi_name account, int64_t ram_bytes, int64_t net_weight, int64_t cpu_weight ) {
-      return intrinsics::get().call<intrinsics::set_resource_limits>(account, ram_bytes, net_weight, cpu_weight);
+   void set_resource_limits( capi_name account, uint64_t gas, bool is_unlimited ) {
+      return intrinsics::get().call<intrinsics::set_resource_limits>(account, gas, is_unlimited);
    }
    int64_t set_proposed_producers( char *producer_data, uint32_t producer_data_size ) {
       return intrinsics::get().call<intrinsics::set_proposed_producers>(producer_data, producer_data_size);
@@ -905,14 +905,14 @@ extern "C" {
    uint32_t get_active_security_group(char* data, uint32_t datalen){
       return intrinsics::get().call<intrinsics::get_active_security_group>(data, datalen);
    }
-  
+
    void set_finalizers(uint64_t packed_finalizer_format, const char* data, uint32_t len) {
       intrinsics::get().call<intrinsics::set_finalizers>(packed_finalizer_format, data, len);
    }
-  
+
 } // extern "C"
 
-int32_t blake2_f( uint32_t rounds, const char* state, uint32_t state_len, const char* msg, uint32_t msg_len, 
+int32_t blake2_f( uint32_t rounds, const char* state, uint32_t state_len, const char* msg, uint32_t msg_len,
                   const char* t0_offset, uint32_t t0_len, const char* t1_offset, uint32_t t1_len, int32_t final, char* result, uint32_t result_len) {
    return intrinsics::get().call<intrinsics::blake2_f>(rounds, state, state_len, msg, msg_len, t0_offset, t0_len, t1_offset, t1_len, final, result, result_len);
 }

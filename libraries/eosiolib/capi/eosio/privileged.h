@@ -10,16 +10,17 @@ extern "C" {
  * @brief Defines %C Privileged API
  */
 
- /**
+/**
  * Get the resource limits of an account
  *
- * @param account - name of the account whose resource limit to get
- * @param ram_bytes - pointer to `int64_t` to hold retrieved ram limit in absolute bytes
- * @param net_weight - pointer to `int64_t` to hold net limit
- * @param cpu_weight - pointer to `int64_t` to hold cpu limit
+ * @ingroup privileged
+ *
+ * @param account - name of the account whose resource limit to get.
+ * @param[out] gas - output to hold retrieved available gas limit.
+ * @param[out] is_unlimited - output to hold retrieved whether the account has unlimited resources.
  */
 __attribute__((eosio_wasm_import))
-void get_resource_limits( capi_name account, int64_t* ram_bytes, int64_t* net_weight, int64_t* cpu_weight );
+void get_resource_limits( capi_name account, uint64_t* gas, bool* is_unlimited );
 
 /**
  * Set the resource limits of an account
@@ -30,7 +31,7 @@ void get_resource_limits( capi_name account, int64_t* ram_bytes, int64_t* net_we
  * @param cpu_weight - fractionally proportionate cpu limit of available resources based on (weight / total_weight_of_all_accounts)
  */
 __attribute__((eosio_wasm_import))
-void set_resource_limits( capi_name account, int64_t ram_bytes, int64_t net_weight, int64_t cpu_weight );
+void set_resource_limits( capi_name account, uint64_t gas, bool is_unlimited );
 
 /**
  * Proposes a schedule change
