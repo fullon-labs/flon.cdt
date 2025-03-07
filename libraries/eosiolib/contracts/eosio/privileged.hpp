@@ -116,8 +116,8 @@ namespace eosio {
       uint32_t min_transaction_cpu_usage;
 
       /**
-       * Maximum lifetime of a transacton
-       * @brief Maximum lifetime of a transacton
+       * Maximum lifetime of a transaction
+       * @brief Maximum lifetime of a transaction
        */
       uint32_t max_transaction_lifetime;
 
