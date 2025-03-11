@@ -1,6 +1,6 @@
 [submodule "cdt-llvm"]
 	path = cdt-llvm
-	url = https://github.com/AntelopeIO/cdt-llvm
+	url = https://github.com/fullon-labs/cdt-llvm
 [submodule "libraries/libc/cdt-musl"]
 	path = libraries/libc/cdt-musl
 	url = https://github.com/AntelopeIO/cdt-musl
