@@ -39,6 +39,7 @@
 cmake-build-debug/
 examples/multi_index_example/build
 examples/hello/build
+.build*
 
 # Python
 __pycache__/
