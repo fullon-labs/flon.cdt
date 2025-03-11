@@ -9,4 +9,4 @@
 	url = https://github.com/AntelopeIO/cdt-libcxx
 [submodule "libraries/native/softfloat"]
 	path = libraries/native/softfloat
-	url = https://github.com/AntelopeIO/berkeley-softfloat-3
+	url = https://github.com/fullon-labs/berkeley-softfloat-3.git
