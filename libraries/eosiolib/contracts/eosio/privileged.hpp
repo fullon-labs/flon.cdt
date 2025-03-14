@@ -152,6 +152,21 @@ namespace eosio {
        */
       uint16_t max_authority_depth;
 
+      /**
+       * Gas per cpu millisecond
+       * @brief Gas per cpu millisecond
+       */
+      uint32_t   gas_per_cpu_ms;
+      /**
+       * Gas per net kilobyte
+       * @brief Gas per net kilobyte
+       */
+      uint32_t   gas_per_net_kb;
+      /**
+       * Gas per ram per kilobyte
+       * @brief Gas per ram per kilobyte
+       */
+      uint32_t   gas_per_ram_kb;
 
       EOSLIB_SERIALIZE( blockchain_parameters,
                         (max_block_net_usage)(target_block_net_usage_pct)
@@ -163,6 +178,7 @@ namespace eosio {
 
                         (max_transaction_lifetime)(deferred_trx_expiration_window)(max_transaction_delay)
                         (max_inline_action_size)(max_inline_action_depth)(max_authority_depth)
+                        (gas_per_cpu_ms)(gas_per_net_kb)(gas_per_ram_kb)
       )
    };
 
