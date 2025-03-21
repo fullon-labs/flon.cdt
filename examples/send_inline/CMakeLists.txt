@@ -8,7 +8,7 @@ ExternalProject_Add(
    send_inline_project
    SOURCE_DIR ${CMAKE_SOURCE_DIR}/src
    BINARY_DIR ${CMAKE_BINARY_DIR}/send_inline
-   CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CDT_ROOT}/lib/cmake/cdt/CDTWasmToolchain.cmake
+   CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CDT_TOOLCHAIN_FILE}
    UPDATE_COMMAND ""
    PATCH_COMMAND ""
    TEST_COMMAND ""

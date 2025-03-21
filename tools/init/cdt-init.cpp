@@ -66,7 +66,7 @@ struct project {
                                  "Stub for hi action's ricardian contract";
 
    const std::string cmake = "project(@)\n\n"
-                             "find_package(cdt)\n\n"
+                             "find_package(@CDT_PROJECT_NAME@)\n\n"
                              "add_contract( @ @ @.cpp )\n"
                              "target_include_directories( @ PUBLIC ${CMAKE_SOURCE_DIR}/../include )\n"
                              "target_ricardian_directory( @ ${CMAKE_SOURCE_DIR}/../ricardian )";
@@ -75,13 +75,13 @@ struct project {
                                     "include(ExternalProject)\n"
                                     "# if no cdt root is given use default path\n"
                                     "if(CDT_ROOT STREQUAL \"\" OR NOT CDT_ROOT)\n"
-                                    "   find_package(cdt)\n"
+                                    "   find_package(@CDT_PROJECT_NAME@)\n"
                                     "endif()\n\n"
                                     "ExternalProject_Add(\n"
                                     "   @_project\n"
                                     "   SOURCE_DIR ${CMAKE_SOURCE_DIR}/src\n"
                                     "   BINARY_DIR ${CMAKE_BINARY_DIR}/@\n"
-                                    "   CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CDT_ROOT}/lib/cmake/cdt/CDTWasmToolchain.cmake\n"
+                                    "   CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CDT_ROOT}/lib/cmake/@CDT_PROJECT_NAME@/CDTWasmToolchain.cmake\n"
                                     "   UPDATE_COMMAND \"\"\n"
                                     "   PATCH_COMMAND \"\"\n"
                                     "   TEST_COMMAND \"\"\n"
