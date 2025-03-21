@@ -6,24 +6,24 @@ In addition to being a general purpose WebAssembly toolchain, specific features 
 
 ## Repo organization
 
-The `main` branch is the development branch: do not use this for production. Refer to the [release page](https://github.com/fullon-labs/cdt/releases) for current information on releases, pre-releases, and obsolete releases as well as the corresponding tags for those releases.
+The `main` branch is the development branch: do not use this for production. Refer to the [release page](https://github.com/fullon-labs/flon.cdt/releases) for current information on releases, pre-releases, and obsolete releases as well as the corresponding tags for those releases.
 ## Binary packages
 
-CDT currently supports Linux x86_64 Debian packages. Visit the [release page](https://github.com/fullon-labs/cdt/releases) to download the package for the appropriate version of CDT. This is the fastest way to get started with the software.
+CDT currently supports Linux x86_64 Debian packages. Visit the [release page](https://github.com/fullon-labs/flon.cdt/releases) to download the package for the appropriate version of CDT. This is the fastest way to get started with the software.
 ### Debian package install
 
 Download the appropriate version of the Debian package and then install it. To download and install the latest version, run the following:
 
 ```sh
-wget https://github.com/fullon-labs/cdt/releases/download/v4.1.0/cdt_4.1.0_amd64.deb
-sudo apt install ./cdt_4.1.0_amd64.deb
+wget https://github.com/fullon-labs/flon.cdt/releases/download/v4.1.0/flon.cdt_4.1.0_amd64.deb
+sudo apt install ./flon.cdt_4.1.0_amd64.deb
 ```
 ### Debian package uninstall
 
 To remove CDT that was installed using a Debian package, simply execute the following command:
 
 ```sh
-sudo apt remove cdt
+sudo apt remove flon.cdt
 ```
 
 ## Building from source
@@ -81,8 +81,8 @@ export CCACHE_DISABLE=1
 **A Warning On Parallel Compilation Jobs (`-j` flag)**: When building C/C++ software often the build is performed in parallel via a command such as `make -j $(nproc)` which uses the number of CPU cores as the number of compilation jobs to perform simultaneously. However, be aware that some compilation units (.cpp files) in CDT are extremely complex and can consume a large amount of memory to compile. If you are running into issues due to amount of memory available on your build host, you may need to reduce the level of parallelization used for the build. For example, instead of `make -j $(nproc)` you can try `make -j2`. Failures due to memory exhaustion will typically but not always manifest as compiler crashes.
 
 ```sh
-git clone --recursive https://github.com/fullon-labs/cdt
-cd cdt
+git clone --recursive https://github.com/fullon-labs/flon.cdt
+cd flon.cdt
 mkdir build
 cd build
 cmake ..
@@ -134,11 +134,8 @@ Installing CDT globally on your system will install the following tools in a loc
 * cdt-ranlib
 * cdt-readelf
 * cdt-strip
-* eosio-pp
-* eosio-wasm2wast
-* eosio-wast2wasm
 
-It will also install CMake files for CDT accessible within a `cmake/cdt` directory located within your system's `lib` directory.
+It will also install CMake files for CDT accessible within a `cmake/flon.cdt` directory located within your system's `lib` directory.
 #### Manual installation
 
 One option for installing CDT globally is via `make install`. From within the `build` directory, run the following command:
@@ -156,7 +153,7 @@ From within the `build` directory, run the following commands to generate a Debi
 ```sh
 cd packages
 bash ./generate_package.sh deb ubuntu-20.04 amd64
-sudo apt install ./cdt_*_amd64.deb
+sudo apt install ./flon.cdt_*_amd64.deb
 ```
 
 ### Uninstall CDT
@@ -164,9 +161,8 @@ sudo apt install ./cdt_*_amd64.deb
 #### Uninstall CDT after manual installation with make
 
 ```sh
-sudo rm -fr /usr/local/cdt
-sudo rm -fr /usr/local/lib/cmake/cdt
-sudo rm /usr/local/bin/eosio-*
+sudo rm -fr /usr/local/flon.cdt
+sudo rm -fr /usr/local/lib/cmake/flon.cdt
 sudo rm /usr/local/bin/cdt-*
 ```
 

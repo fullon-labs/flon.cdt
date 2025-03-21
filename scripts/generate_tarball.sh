@@ -27,7 +27,7 @@ sed "s/_PREFIX_/\/${SPREFIX}\/${SSUBPREFIX}/g" ${BUILD_DIR}/modules/${PROJECT}-c
 cp -R ${BUILD_DIR}/scripts/* ${CDT_PREFIX}/scripts  || exit 1
 
 # install misc.
-cp ${BUILD_DIR}/cdt.imports ${CDT_PREFIX} || exit 1
+cp ${BUILD_DIR}/@PROJECT_NAME@.imports ${CDT_PREFIX} || exit 1
 
 # install wasm includes
 cp -R ${BUILD_DIR}/include/* ${CDT_PREFIX}/include || exit 1

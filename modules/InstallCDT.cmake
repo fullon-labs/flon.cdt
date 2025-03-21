@@ -38,8 +38,8 @@ endmacro( cdt_tool_install_and_symlink )
 
 macro( cdt_cmake_install_and_symlink file symlink )
    set(BINARY_DIR ${CMAKE_BINARY_DIR}/modules)
-   install(CODE "execute_process( COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/lib/cmake/cdt)")
-   install(CODE "execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink ${CDT_INSTALL_PREFIX}/lib/cmake/cdt/${file} ${CMAKE_INSTALL_PREFIX}/lib/cmake/cdt/${symlink})")
+   install(CODE "execute_process( COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/lib/cmake/${PROJECT_NAME})")
+   install(CODE "execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink ${CDT_INSTALL_PREFIX}/lib/cmake/${PROJECT_NAME}/${file} ${CMAKE_INSTALL_PREFIX}/lib/cmake/${PROJECT_NAME}/${symlink})")
 endmacro( cdt_cmake_install_and_symlink )
 
 macro( cdt_libraries_install)
@@ -78,7 +78,7 @@ cdt_tool_install_and_symlink(cdt-init cdt-init)
 cdt_clang_install(../lib/LLVMEosioApply${CMAKE_SHARED_LIBRARY_SUFFIX})
 cdt_clang_install(../lib/LLVMEosioSoftfloat${CMAKE_SHARED_LIBRARY_SUFFIX})
 
-cdt_cmake_install_and_symlink(cdt-config.cmake cdt-config.cmake)
+cdt_cmake_install_and_symlink(${PROJECT_NAME}-config.cmake ${PROJECT_NAME}-config.cmake)
 cdt_cmake_install_and_symlink(CDTWasmToolchain.cmake CDTWasmToolchain.cmake)
 cdt_cmake_install_and_symlink(CDTMacros.cmake CDTMacros.cmake)
 
