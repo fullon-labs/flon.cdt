@@ -19,7 +19,7 @@ Start with an empty ABI, for exemplification we will work based on the `eosio.to
 
 ```text
 {
-   "version": "eosio::abi/1.0",
+   "version": "flon::abi/1.0",
    "types": [],
    "structs": [],
    "actions": [],
@@ -48,7 +48,7 @@ The ABI now looks like this:
 
 ```json
 {
-   "version": "eosio::abi/1.1",
+   "version": "flon::abi/1.1",
    "types": [{
      "new_type_name": "name",
      "type": "name"
@@ -80,7 +80,7 @@ A struct's object definition in JSON looks like the following:
 {
    "name":"", // The field's name
    "type":""   // The field's type
-}    
+}
 ```
 In the `eosio.token` contract, there's a number of structs that require definition. Please note, not all of the structs are explicitly defined, some correspond to an actions' parameters. Here's a list of structs that require an ABI description for the `eosio.token` contract:
 
@@ -330,7 +330,7 @@ Finally, an ABI file that accurately describes the `eosio.token` contract.
 
 ```json
 {
-  "version": "eosio::abi/1.1",
+  "version": "flon::abi/1.1",
   "types": [
     {
       "new_type_name": "name",

@@ -1,6 +1,6 @@
 {
     "____comment": "This file was generated with eosio-abigen. DO NOT EDIT Tue Jan 22 18:06:02 2019",
-    "version": "eosio::abi/1.1",
+    "version": "flon::abi/1.1",
     "types": [],
     "structs": [
         {

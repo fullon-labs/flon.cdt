@@ -10,14 +10,14 @@ This tutorial provides instructions to how to hand-write an ABI file. This shoul
 
 The Application Binary Interface (ABI) is a JSON-based description to convert user actions between their JSON and Binary representations. The ABI also describes how to convert the database state to/from JSON. Once you have described your contract via an ABI then developers and users will be able to interact with your contract seamlessly via JSON.
 
-This tutorial will use the [eosio.token](https://github.com/fullon-labs/reference-contracts/tree/main/contracts/eosio.token) contract as an example. *eosio.token contract does not cover every possible permutation of an ABI definition.  
+This tutorial will use the [eosio.token](https://github.com/fullon-labs/reference-contracts/tree/main/contracts/eosio.token) contract as an example. *eosio.token contract does not cover every possible permutation of an ABI definition.
 
 To make things easy, we will start with an empty ABI.
 
 ```text
 
 {
-   "version": "eosio::abi/1.0",
+   "version": "flon::abi/1.0",
    "types": [],
    "structs": [],
    "actions": [],
@@ -52,7 +52,7 @@ Our ABI now looks like this:
 
 ```json
 {
-   "version": "eosio::abi/1.0",
+   "version": "flon::abi/1.0",
    "types": [{
      "new_type_name": "account_name",
      "type": "name"
@@ -360,7 +360,7 @@ Finally, once all the pieces are strewn together, we have ourselves a ABI file t
 
 ```json
 {
-  "version": "eosio::abi/1.0",
+  "version": "flon::abi/1.0",
   "types": [
     {
       "new_type_name": "account_name",

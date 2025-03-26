@@ -65,7 +65,7 @@ struct abi_action_result {
 struct abi {
    int version_major = 1;
    int version_minor = 1;
-   std::string version_string()const { return std::string("eosio::abi/")+std::to_string(version_major)+"."+std::to_string(version_minor); }
+   std::string version_string()const { return std::string("flon::abi/")+std::to_string(version_major)+"."+std::to_string(version_minor); }
    std::set<abi_struct>                   structs;
    std::set<abi_typedef>                  typedefs;
    std::set<abi_action>                   actions;
