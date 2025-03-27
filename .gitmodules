@@ -1,6 +1,6 @@
 [submodule "cdt-llvm"]
 	path = cdt-llvm
-	url = git@github.com:fullon-labs/cdt-llvm.git
+	url = https://github.com/fullon-labs/cdt-llvm
 [submodule "libraries/libc/cdt-musl"]
 	path = libraries/libc/cdt-musl
 	url = https://github.com/AntelopeIO/cdt-musl
@@ -9,4 +9,5 @@
 	url = https://github.com/AntelopeIO/cdt-libcxx
 [submodule "libraries/native/softfloat"]
 	path = libraries/native/softfloat
-	url = git@github.com:fullon-labs/berkeley-softfloat-3.git
+	url = https://github.com/fullon-labs/berkeley-softfloat-3
+
