@@ -59,9 +59,10 @@ namespace eosio { namespace cdt {
          std::map<std::string, RecordDecl*>    records;
          llvm::sys::fs::TempFile*              tmp_file;
          llvm::ArrayRef<std::string>           sources;
-         size_t                                source_index = 0;
+         size_t                                source_index             = 0;
          std::map<std::string, std::string>    tmp_files;
-         bool                                  warn_action_read_only;
+         bool                                  warn_action_read_only    = false;
+         bool                                  keep_gen_code_file       = false;
 
          using generation_utils::generation_utils;
 
@@ -81,6 +82,11 @@ namespace eosio { namespace cdt {
          void set_warn_action_read_only(bool w) {
             warn_action_read_only = w;
          }
+
+         void set_keep_gen_code_file(bool k) {
+            keep_gen_code_file = k;
+         }
+
    };
 
    class eosio_codegen_visitor : public RecursiveASTVisitor<eosio_codegen_visitor>, public generation_utils {
@@ -158,10 +164,10 @@ namespace eosio { namespace cdt {
                ss << "uint32_t action_data_size();\n";
                ss << "__attribute__((eosio_wasm_import))\n";
                ss << "uint32_t read_action_data(void*, uint32_t);\n";
-               const auto& return_ty = decl->getReturnType().getAsString();	
-               if (return_ty != "void") {	
-                  ss << "__attribute__((eosio_wasm_import))\n";	
-                  ss << "void set_action_return_value(void*, size_t);\n";	
+               const auto& return_ty = decl->getReturnType().getAsString();
+               if (return_ty != "void") {
+                  ss << "__attribute__((eosio_wasm_import))\n";
+                  ss << "void set_action_return_value(void*, size_t);\n";
                }
                ss << "__attribute__((weak, " << attr << "(\"";
                ss << get_str(decl);
@@ -471,7 +477,12 @@ namespace eosio { namespace cdt {
 
                llvm::SmallString<128> fn;
                try {
-                  llvm::sys::fs::createTemporaryFile("fullon", ".cpp", fn);
+                  if (cg.keep_gen_code_file) {
+                     fn  = llvm::sys::path::filename(main_file);
+                     llvm::sys::path::replace_extension(fn, ".gen.cpp");
+                  } else {
+                     llvm::sys::fs::createTemporaryFile("fullon", ".cpp", fn);
+                  }
 
                   std::ofstream out(fn.c_str());
                   {
