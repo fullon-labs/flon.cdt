@@ -41,7 +41,7 @@ using namespace eosio::cdt;
 
 void handle_empty_abigen(const std::string& contract_name, bool has_o_opt, bool has_contract_opt);
 
-void generate(const std::vector<std::string>& base_options, std::string input, std::string contract_name, const std::vector<std::string>& resource_paths, const std::pair<int, int>& abi_version, bool abigen, bool suppress_ricardian_warning, bool has_o_opt, bool has_contract_opt, bool warn_action_read_only, bool keep_gen_code_file) {
+void generate(const std::vector<std::string>& base_options, std::string input, std::string contract_name, const std::vector<std::string>& resource_paths, const std::pair<int, int>& abi_version, bool abigen, bool suppress_ricardian_warning, bool has_o_opt, bool has_contract_opt, bool warn_action_read_only, bool keep_gen_code_file, bool verbose) {
    std::vector<std::string> options;
    options.push_back("cdt-cpp");
    options.push_back(input); // don't remove oddity of CommonOptionsParser?
@@ -69,7 +69,7 @@ void generate(const std::vector<std::string>& base_options, std::string input, s
    codegen::get().set_contract_name(contract_name);
    codegen::get().set_warn_action_read_only(warn_action_read_only);
    codegen::get().set_keep_gen_code_file(keep_gen_code_file);
-
+   codegen::get().set_verbose(verbose);
 
    int tool_run = -1;
    tool_run = ctool.run(newFrontendActionFactory<eosio_abigen_frontend_action>().get());
@@ -108,6 +108,28 @@ void handle_empty_abigen(const std::string& contract_name, bool has_o_opt, bool 
    }
 }
 
+void print_exec_subprogram(StringRef name,  const std::vector<std::string>& new_opts, StringRef description) {
+
+   llvm::outs() << "start to "<< description << " ...\n";
+   llvm::SmallString<128> CurrDir;
+   auto ec = llvm::sys::fs::current_path(CurrDir);
+   if (!ec) {
+      llvm::outs() << "cd " << CurrDir.c_str() << " && ";
+   }
+
+   const auto& path = llvm::sys::findProgramByName(name, {eosio::cdt::whereami::where()});
+   if (path) {
+      llvm::outs() << "\"" << *path << "\"";
+   } else {
+      llvm::outs() << "\"" << name << "\"";
+   }
+   for (const auto& opt: new_opts) {
+      if (opt != "-")
+         llvm::outs() << " " << opt;
+   }
+   llvm::outs() << "\n";
+}
+
 int main(int argc, const char **argv) {
 
    // fix to show version info without having to have any other arguments
@@ -136,7 +158,7 @@ int main(int argc, const char **argv) {
             tool_opts.erase(std::remove_if(tool_opts.begin(), tool_opts.end(),
                                            [&](const auto& opt){ return non_tool_opts.count(opt); }),
                             tool_opts.end());
-            generate(tool_opts, input, opts.abigen_contract, opts.abigen_resources, opts.abi_version, opts.abigen, opts.suppress_ricardian_warning, opts.has_o_opt, opts.has_contract_opt, opts.warn_action_read_only, opts.keep_gen_code_file);
+            generate(tool_opts, input, opts.abigen_contract, opts.abigen_resources, opts.abi_version, opts.abigen, opts.suppress_ricardian_warning, opts.has_o_opt, opts.has_contract_opt, opts.warn_action_read_only, opts.keep_gen_code_file, opts.verbose);
 
             auto src = SmallString<64>(input);
             llvm::sys::path::remove_filename(src);
@@ -161,21 +183,29 @@ int main(int argc, const char **argv) {
          auto file_iter = codegen::get().tmp_files.find(abs_input.c_str());
          if (file_iter != codegen::get().tmp_files.end()) {
             stdin_redirect = file_iter->second;
-            new_opts.insert(new_opts.begin(), "-");
+            new_opts.insert(new_opts.begin(), *stdin_redirect);
          } else {
             new_opts.insert(new_opts.begin(), input);
          }
 
          new_opts.insert(new_opts.begin(), "-xc++");
+         if (opts.verbose) {
+            new_opts.insert(new_opts.begin(), "-v");
+            print_exec_subprogram("clang-9", new_opts, "compile");
+         }
 
-         if (!eosio::cdt::environment::exec_subprogram("clang-9", new_opts, false, stdin_redirect)) {
+         if (!eosio::cdt::environment::exec_subprogram("clang-9", new_opts)) {
             if(stdin_redirect && !opts.keep_gen_code_file) {
                llvm::sys::fs::remove(*stdin_redirect);
+               if (opts.verbose)
+                  std::cout << "remove auto-generated code file \"" << (*stdin_redirect) << "\"\n";
             }
             return -1;
          }
          if(stdin_redirect && !opts.keep_gen_code_file) {
             llvm::sys::fs::remove(*stdin_redirect);
+            if (opts.verbose)
+               llvm::outs() << "remove auto-generated code file \"" << (*stdin_redirect) << "\"\n";
          }
       }
    } catch (std::runtime_error& err) {
@@ -187,6 +217,10 @@ int main(int argc, const char **argv) {
       std::vector<std::string> new_opts = opts.ld_options;
       for (auto input : outputs) {
          new_opts.insert(new_opts.begin(), input);
+      }
+
+      if (opts.verbose) {
+         print_exec_subprogram("cdt-ld", new_opts, "link");
       }
 
       if (!eosio::cdt::environment::exec_subprogram("cdt-ld", new_opts)) {

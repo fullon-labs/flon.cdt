@@ -63,6 +63,9 @@ namespace eosio { namespace cdt {
          std::map<std::string, std::string>    tmp_files;
          bool                                  warn_action_read_only    = false;
          bool                                  keep_gen_code_file       = false;
+         bool                                  verbose                  = false;
+         size_t                                max_function_call_depth  = 2048;
+
 
          using generation_utils::generation_utils;
 
@@ -85,6 +88,10 @@ namespace eosio { namespace cdt {
 
          void set_keep_gen_code_file(bool k) {
             keep_gen_code_file = k;
+         }
+
+         void set_verbose(bool v) {
+            verbose = v;
          }
 
    };
@@ -327,7 +334,11 @@ namespace eosio { namespace cdt {
             }
          }
 
-         void process_function(FunctionDecl* func_decl) {
+         void process_function(FunctionDecl* func_decl, size_t depth) {
+
+            CDT_CHECK_ERROR(cg.max_function_call_depth == 0 || depth <= cg.max_function_call_depth,
+               "codegen_error", func_decl->getLocation(), "function" + func_decl->getQualifiedNameAsString() + " call depth exceed the max limit");
+
             if (func_decl->isThisDeclarationADefinition() && func_decl->hasBody()) {
                Stmt *stmts = func_decl->getBody();
                for (auto it = stmts->child_begin(); it != stmts->child_end(); ++it) {
@@ -341,7 +352,7 @@ namespace eosio { namespace cdt {
                      if (auto* call = dyn_cast<CallExpr>(s)) {
                         if (FunctionDecl *fd = call->getDirectCallee()) {
                            if (func_calls.count(fd) == 0) {
-                              process_function(fd);
+                              process_function(fd, depth + 1);
                            }
                            if (!func_calls[fd].empty()) {
                               func_calls[func_decl].push_back(call);
@@ -385,7 +396,7 @@ namespace eosio { namespace cdt {
             if (func_calls.count(func_decl) == 0 && is_write_host_func(func_decl)) {
                func_calls[func_decl] = {(CallExpr*)func_decl};
             } else {
-               process_function(func_decl);
+               process_function(func_decl, 1);
             }
             return true;
          }
@@ -480,10 +491,12 @@ namespace eosio { namespace cdt {
                   if (cg.keep_gen_code_file) {
                      fn  = llvm::sys::path::filename(main_file);
                      llvm::sys::path::replace_extension(fn, ".gen.cpp");
+                     llvm::sys::fs::make_absolute(fn);
                   } else {
                      llvm::sys::fs::createTemporaryFile("fullon", ".cpp", fn);
                   }
-
+                  if (cg.verbose)
+                  llvm::outs() << "codegen: generate contract source code to file \""<< fn.c_str() << "\"\n";
                   std::ofstream out(fn.c_str());
                   {
                      llvm::SmallString<64> abs_file_path(main_fe->getName());
