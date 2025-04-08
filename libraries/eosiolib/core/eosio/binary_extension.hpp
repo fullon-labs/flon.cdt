@@ -195,6 +195,7 @@ namespace eosio {
 
    /**
     *  Serialize a binary_extension into a stream
+    *  Serialize a binary extension data only if it has a value
     *
     *  @ingroup binary_extension
     *  @brief Serialize a binary_extension
@@ -205,8 +206,10 @@ namespace eosio {
     */
    template<typename DataStream, typename T>
    inline DataStream& operator<<(DataStream& ds, const eosio::binary_extension<T>& be) {
-     ds << be.value_or();
-     return ds;
+      if (be.has_value()) {
+         ds << be.value();
+      }
+      return ds;
    }
 
    /**
