@@ -645,10 +645,10 @@ class multi_index
 
             /**
              * Gets the object with the smallest primary key in the case where the secondary key is not unique.
-             * 
-             * Avoid the common pitfall of copy-assigning the T& reference returned 
+             *
+             * Avoid the common pitfall of copy-assigning the T& reference returned
              * to a stack-allocated local variable and then passing that into modify of the multi-index.
-             * The most common mistake is when the local variable is defined as auto 
+             * The most common mistake is when the local variable is defined as auto
              * typename, instead it should be of type auto& or decltype(auto).
              */
             const T& get( secondary_key_type&& secondary, const char* error_msg = "unable to find secondary key" )const {
@@ -657,10 +657,10 @@ class multi_index
 
             /**
              * Gets the object with the smallest primary key in the case where the secondary key is not unique.
-             * 
-             * Avoid the common pitfall of copy-assigning the T& reference returned 
+             *
+             * Avoid the common pitfall of copy-assigning the T& reference returned
              * to a stack-allocated local variable and then passing that into modify of the multi-index.
-             * The most common mistake is when the local variable is defined as auto 
+             * The most common mistake is when the local variable is defined as auto
              * typename, instead it should be of type auto& or decltype(auto).
              */
             const T& get( const secondary_key_type& secondary, const char* error_msg = "unable to find secondary key" )const {
@@ -705,8 +705,8 @@ class multi_index
                return {this, &mi};
             }
             /**
-             * Warning: the interator_to can have undefined behavior if the caller 
-             * passes in a reference to a stack-allocated object rather than the 
+             * Warning: the interator_to can have undefined behavior if the caller
+             * passes in a reference to a stack-allocated object rather than the
              * reference returned by get or by dereferencing a const_iterator.
              */
             const_iterator iterator_to( const T& obj ) {
@@ -715,12 +715,14 @@ class multi_index
                const auto& objitem = static_cast<const item&>(obj);
                eosio::check( objitem.__idx == _multidx, "object passed to iterator_to is not in multi_index" );
 
-               if( objitem.__iters[Number] == -1 ) {
+               if( objitem.__iters[Number] < 0 ) {
                   secondary_key_type temp_secondary_key;
                   auto idxitr = secondary_index_db_functions<secondary_key_type>::db_idx_find_primary(get_code().value, get_scope(), name(), objitem.primary_key(), temp_secondary_key);
                   auto& mi = const_cast<item&>( objitem );
                   mi.__iters[Number] = idxitr;
                }
+
+               if( objitem.__iters[Number] < 0 ) return cend();
 
                return {this, &objitem};
             }
@@ -746,6 +748,72 @@ class multi_index
                _multidx->erase(obj);
 
                return itr;
+            }
+
+            /**
+             *  Emplace the secondary index of an existing object in the table.
+             *  @ingroup multiindex
+             *
+             *  @param idx - the secondary index
+             *  @param obj - a reference to the object to be updated
+             *  @param payer - account name of the payer for the Storage usage of the updated row
+             *
+             *  @pre idx is got by get_index()
+             *  @pre obj is an existing object in the table, and it's secondary index is null (not existing in the table)
+             *  @pre payer is a valid account that is authorized to execute the action and be billed for storage usage.
+             *
+             *  @post The secondary index are emplaced
+             *  @post The payer is charged for the storage usage of the emplaced index.
+             *
+             *  Exceptions:
+             *  If called with an invalid precondition, execution is aborted.
+             *
+             *  Example:
+             *
+             *  @code
+             *  // This assumes the code from the constructor example. Replace myaction() {...}
+             *
+             *      void myaction() {
+             *        // create reference to address_index  - see emplace example
+             *        // add dan account to table           - see emplace example
+             *
+             *        auto idx = addresses.get_index<"bycityhash">();
+             *        auto itr = addresses.find("dan"_n);
+             *        eosio::check(itr != addresses.end(), "Address for account not found");
+             *        addresses.modify( *itr, payer, [&]( auto& address ) {
+             *          address.city = "San Luis Obispo";
+             *          address.state = "CA";
+             *          if (idx.iterator_to(obj) == idx.end()) {
+             *             auto idx_itr = idx.emplace_index(idx);
+             *             eosio::check(idx_itr != idx.end(), "Lock arf, city index of Address not extended")
+             *          }
+             *        });
+             *        eosio::check(itr->city == "San Luis Obispo", "Lock arf, Address not modified");
+             *      }
+             *  }
+             *  EOSIO_DISPATCH( addressbook, (myaction) )
+             *  @endcode
+             */
+            const_iterator emplace_index( const T& obj, const eosio::name& payer ) {
+               using namespace _multi_index_detail;
+
+               const auto& objitem = static_cast<const item&>(obj);
+               eosio::check( objitem.__idx == _multidx, "object passed to emplace_index is not in multi_index" );
+               auto& mutableitem = const_cast<item&>(objitem);
+               eosio::check( get_code() == current_receiver(), "cannot modify objects in table of another contract" ); // Quick fix for mutating db using multi_index that shouldn't allow mutation. Real fix can come in RC2.
+
+               auto pk = obj.primary_key();
+               auto indexitr = mutableitem.__iters[Number];
+               if( indexitr < 0 ) {
+                  secondary_key_type temp_secondary_key;
+                  indexitr = secondary_index_db_functions<secondary_key_type>::db_idx_find_primary( get_code().value, get_scope(), name(), pk,  temp_secondary_key );
+               }
+               eosio::check( indexitr < 0, "secondary index of object existed" );
+
+               auto secondary = extract_secondary_key( obj );
+               mutableitem.__iters[Number] = secondary_index_db_functions<secondary_key_type>::db_idx_store( get_scope(), name(), payer.value, pk, secondary );
+
+               return {this, &objitem};
             }
 
             eosio::name get_code()const  { return _multidx->get_code(); }
@@ -785,7 +853,7 @@ class multi_index
       };
 
       using indices_type = typename make_index_tuple<sizeof... (Indices), Indices...>::type;
-      
+
       class make_extractor_tuple {
          template <typename Obj, typename IndicesType, std::size_t... Seq>
          static constexpr auto extractor_tuple(IndicesType, const Obj& obj, std::index_sequence<Seq...>) {
@@ -1521,9 +1589,9 @@ class multi_index
        * }
        * EOSIO_DISPATCH( addressbook, (myaction) )
        * @endcode
-       * 
-       * Warning: the interator_to can have undefined behavior if the caller 
-       * passes in a reference to a stack-allocated object rather than the 
+       *
+       * Warning: the interator_to can have undefined behavior if the caller
+       * passes in a reference to a stack-allocated object rather than the
        * reference returned by get or by dereferencing a const_iterator.
        */
       const_iterator iterator_to( const T& obj )const {
@@ -1747,7 +1815,12 @@ class multi_index
                            = secondary_index_db_functions<typename index_type::secondary_key_type>::db_idx_find_primary( _code.value, _scope, index_type::name(), pk,  temp_secondary_key );
                }
 
-               secondary_index_db_functions<typename index_type::secondary_key_type>::db_idx_update( indexitr, payer.value, secondary );
+               if (indexitr < 0) {
+                  // create secondary index if not existed.
+                  mutableitem.__iters[index_type::number()] = secondary_index_db_functions<typename index_type::secondary_key_type>::db_idx_store( _scope, index_type::name(), payer.value, pk, secondary );
+               } else {
+                  secondary_index_db_functions<typename index_type::secondary_key_type>::db_idx_update( indexitr, payer.value, secondary );
+               }
             }
          } );
       }
@@ -1757,9 +1830,9 @@ class multi_index
        * @ingroup multiindex
        *
        * @param primary - Primary key value of the object.
-       * @return A constant reference to the object containing the specified primary key. 
+       * @return A constant reference to the object containing the specified primary key.
        *
-       * Exception - No object matches the given key. 
+       * Exception - No object matches the given key.
        *
        * Example:
        *
@@ -1776,12 +1849,12 @@ class multi_index
        * }
        * EOSIO_DISPATCH( addressbook, (myaction) )
        * @endcode
-       * 
-       * Warning: 
-       * 
-       * Avoid the common pitfall of copy-assigning the T& reference returned 
+       *
+       * Warning:
+       *
+       * Avoid the common pitfall of copy-assigning the T& reference returned
        * to a stack-allocated local variable and then passing that into modify of the multi-index.
-       * The most common mistake is when the local variable is defined as auto 
+       * The most common mistake is when the local variable is defined as auto
        * typename, instead it should be of type auto& or decltype(auto).
        */
       template<typename PK>
