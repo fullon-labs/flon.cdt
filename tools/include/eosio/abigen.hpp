@@ -68,13 +68,14 @@ namespace eosio { namespace cdt {
          abi_action ret;
          auto action_name = decl->getEosioActionAttr()->getName();
 
-         if (!checked_actions.insert(get_action_name(decl)).second)
-            CDT_CHECK_WARN(!rcs[get_action_name(decl)].empty(), "abigen_warning", decl->getLocation(), "Action <"+get_action_name(decl)+"> does not have a ricardian contract");
+         if (!suppress_ricardian_warnings) {
+            if (!checked_actions.insert(get_action_name(decl)).second)
+               CDT_CHECK_WARN(!rcs[get_action_name(decl)].empty(), "abigen_warning", decl->getLocation(), "Action <"+get_action_name(decl)+"> does not have a ricardian contract");
 
-         if (!suppress_ricardian_warnings)
             if (rcs[get_action_name(decl)].empty())
                // TODO:
                std::cout << "Warning, action <"+get_action_name(decl)+"> does not have a ricardian contract\n";
+         }
 
          ret.ricardian_contract = rcs[get_action_name(decl)];
 
@@ -95,13 +96,14 @@ namespace eosio { namespace cdt {
 
          auto action_name = decl->getEosioActionAttr()->getName();
 
-         if (!checked_actions.insert(get_action_name(decl)).second)
-            CDT_CHECK_WARN(!rcs[get_action_name(decl)].empty(), "abigen_warning", decl->getLocation(), "Action <"+get_action_name(decl)+"> does not have a ricardian contract");
+         if (!suppress_ricardian_warnings) {
+            if (!checked_actions.insert(get_action_name(decl)).second)
+               CDT_CHECK_WARN(!rcs[get_action_name(decl)].empty(), "abigen_warning", decl->getLocation(), "Action <"+get_action_name(decl)+"> does not have a ricardian contract");
 
-         if (!suppress_ricardian_warnings)
             if (rcs[get_action_name(decl)].empty())
                // TODO
                std::cout << "Warning, action <"+get_action_name(decl)+"> does not have a ricardian contract\n";
+         }
 
          ret.ricardian_contract = rcs[get_action_name(decl)];
 
@@ -804,7 +806,7 @@ namespace eosio { namespace cdt {
                return false;
             if (decl1 == decl2)
                return true;
-            
+
             // checking if declaration is a typedef or using
             if (const clang::TypedefNameDecl* typedef_decl = llvm::dyn_cast<clang::TypedefNameDecl>(decl1)) {
                if (const auto* cur_type = typedef_decl->getUnderlyingType().getTypePtrOrNull()) {
@@ -816,7 +818,7 @@ namespace eosio { namespace cdt {
 
             return false;
          }
-         
+
          bool defined_in_contract(const clang::ClassTemplateSpecializationDecl* decl) {
 
             if (!contract_class) {
@@ -824,7 +826,7 @@ namespace eosio { namespace cdt {
                   CDT_WARN("codegen_warning", decl->getLocation(), "contract class not found: " + ag.get_contract_name());
                   return false;
             }
-            
+
             for (const clang::Decl* cur_decl : contract_class->decls()) {
                if (is_same_type(cur_decl, decl))
                   return true;
@@ -873,7 +875,7 @@ namespace eosio { namespace cdt {
             }
             if (!is_eosio_contract)
                return true;
-            
+
             auto attr_name = cxx_decl->getEosioContractAttr()->getName();
             auto name = attr_name.empty() ? cxx_decl->getName() : attr_name;
             if (name == llvm::StringRef(ag.get_contract_name())) {
