@@ -153,6 +153,13 @@ namespace eosio {
       uint16_t max_authority_depth;
 
       /**
+       * Maximum total ram usage in bytes.
+       * @brief Maximum total ram usage in bytes.
+       */
+      ///<
+      uint64_t   max_total_ram_usage;
+
+      /**
        * Gas per cpu millisecond
        * @brief Gas per cpu millisecond
        */
@@ -178,7 +185,7 @@ namespace eosio {
 
                         (max_transaction_lifetime)(deferred_trx_expiration_window)(max_transaction_delay)
                         (max_inline_action_size)(max_inline_action_depth)(max_authority_depth)
-                        (gas_per_cpu_ms)(gas_per_net_kb)(gas_per_ram_kb)
+                        (max_total_ram_usage)(gas_per_cpu_ms)(gas_per_net_kb)(gas_per_ram_kb)
       )
    };
 
