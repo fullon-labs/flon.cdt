@@ -31,6 +31,9 @@ set(CDT_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME})
 option(ENABLE_NATIVE_COMPILER "enable native builds with the CDT toolchain" ON)
 option(ENABLE_TESTS "enable building tests" ON)
 
+set(CHAIN_SYSTEM_ACCOUNT_NAME "flon" CACHE STRING "Chain system account name")
+message(STATUS "Using CHAIN_SYSTEM_ACCOUNT_NAME=\"${CHAIN_SYSTEM_ACCOUNT_NAME}\"")
+
 include(GNUInstallDirs)
 
 if(NOT CMAKE_BUILD_TYPE)
