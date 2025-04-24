@@ -141,7 +141,8 @@ struct environment {
       std::string find_path = eosio::cdt::whereami::where();
       if (root)
          find_path = "/usr/bin";
-      if ( const auto& path = llvm::sys::findProgramByName(prog.c_str(), {find_path}) ) {
+      std::vector<llvm::StringRef> paths = {find_path};
+      if ( const auto& path = llvm::sys::findProgramByName(prog.c_str(), paths) ) {
          std::vector<llvm::Optional<llvm::StringRef>> redirects;
          if(stdin_file || stdout_file)
             redirects = { llvm::None, llvm::None, llvm::None };
