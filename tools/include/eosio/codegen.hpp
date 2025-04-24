@@ -62,7 +62,6 @@ namespace eosio { namespace cdt {
          size_t                                source_index             = 0;
          std::map<std::string, std::string>    tmp_files;
          bool                                  warn_action_read_only    = false;
-         bool                                  keep_gen_code_file       = false;
          bool                                  verbose                  = false;
          size_t                                max_function_call_depth  = 2048;
 
@@ -84,10 +83,6 @@ namespace eosio { namespace cdt {
 
          void set_warn_action_read_only(bool w) {
             warn_action_read_only = w;
-         }
-
-         void set_keep_gen_code_file(bool k) {
-            keep_gen_code_file = k;
          }
 
          void set_verbose(bool v) {
@@ -486,15 +481,11 @@ namespace eosio { namespace cdt {
                   return;
                }
 
-               llvm::SmallString<128> fn;
                try {
-                  if (cg.keep_gen_code_file) {
-                     fn  = llvm::sys::path::filename(main_file);
-                     llvm::sys::path::replace_extension(fn, ".gen.cpp");
-                     llvm::sys::fs::make_absolute(fn);
-                  } else {
-                     llvm::sys::fs::createTemporaryFile("fullon", ".cpp", fn);
-                  }
+                  llvm::SmallString<128> fn  = llvm::sys::path::filename(main_file);
+                  llvm::sys::path::replace_extension(fn, ".gen.cpp");
+                  llvm::sys::fs::make_absolute(fn);
+
                   if (cg.verbose)
                   llvm::outs() << "codegen: generate contract source code to file \""<< fn.c_str() << "\"\n";
                   std::ofstream out(fn.c_str());

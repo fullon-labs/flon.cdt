@@ -404,7 +404,6 @@ struct Options {
    bool has_o_opt;
    bool has_contract_opt;
    bool warn_action_read_only;
-   bool keep_gen_code_file;
    bool verbose;
 };
 
@@ -586,7 +585,6 @@ static Options CreateOptions(bool add_defaults=true) {
    bool has_o_opt;
    bool has_contract_opt;
    bool warn_action_read_only;
-   bool keep_gen_code_file;
    bool verbose;
 
 #ifdef ONLY_LD
@@ -958,8 +956,6 @@ static Options CreateOptions(bool add_defaults=true) {
       warn_action_read_only = false;
    }
 
-   keep_gen_code_file = bool(keep_gen_code_file_opt);
-
 #endif
 
    /* TODO add some way of defaulting these to the current highest version */
@@ -973,8 +969,8 @@ static Options CreateOptions(bool add_defaults=true) {
    }
 
 #ifndef ONLY_LD
-   return {output_fn, inputs, link, abigen, no_missing_ricardian_clause_opt, pp_only, pp_dir, abigen_output, abigen_contract, copts, ldopts, agopts, agresources, debug, fnative_opt, {abi_version_major, abi_version_minor}, has_o_opt, has_contract_opt, warn_action_read_only, keep_gen_code_file, verbose};
+   return {output_fn, inputs, link, abigen, no_missing_ricardian_clause_opt, pp_only, pp_dir, abigen_output, abigen_contract, copts, ldopts, agopts, agresources, debug, fnative_opt, {abi_version_major, abi_version_minor}, has_o_opt, has_contract_opt, warn_action_read_only, verbose};
 #else
-   return {output_fn, {}, link, abigen, no_missing_ricardian_clause_opt, pp_only, pp_dir, abigen_output, abigen_contract, copts, ldopts, agopts, agresources, debug, fnative_opt, {abi_version_major, abi_version_minor}, has_o_opt, has_contract_opt, warn_action_read_only, keep_gen_code_file, verbose};
+   return {output_fn, {}, link, abigen, no_missing_ricardian_clause_opt, pp_only, pp_dir, abigen_output, abigen_contract, copts, ldopts, agopts, agresources, debug, fnative_opt, {abi_version_major, abi_version_minor}, has_o_opt, has_contract_opt, warn_action_read_only, verbose};
 #endif
 }
