@@ -16,9 +16,17 @@
 
 #ifndef ONLY_LD
 static llvm::cl::OptionCategory EosioCompilerToolCategory("compiler options");
+#define COMMON_CAT EosioCompilerToolCategory
 #else
 static llvm::cl::OptionCategory EosioLdToolCategory("ld options");
+#define COMMON_CAT EosioLdToolCategory
 #endif
+
+/// begin common options
+static cl::opt<bool> verbose_opt(
+   "verbose",
+   cl::desc("Show commands to run and use verbose output"),
+   cl::cat(COMMON_CAT));
 
 /// begin ld options
 static cl::opt<bool> stack_canary_opt(
@@ -338,10 +346,6 @@ static cl::opt<bool> v_opt(
     "v",
     cl::desc("Print version information"),
     cl::cat(EosioCompilerToolCategory));
-static cl::opt<bool> verbose_opt(
-    "verbose",
-    cl::desc("Show commands to run and use verbose output"),
-    cl::cat(EosioCompilerToolCategory));
 static cl::opt<bool> w_opt(
     "w",
     cl::desc("Suppress all warnings"),
@@ -587,6 +591,13 @@ static Options CreateOptions(bool add_defaults=true) {
    bool warn_action_read_only;
    bool verbose;
 
+   /// common options
+   verbose = bool(verbose_opt);
+   if (verbose) {
+      ldopts.emplace_back("--verbose");
+      copts.emplace_back("--verbose");
+   }
+
 #ifdef ONLY_LD
    bool abigen = false;
    bool pp_only = false;
@@ -809,7 +820,6 @@ static Options CreateOptions(bool add_defaults=true) {
    if (v_opt) {
       copts.emplace_back("-v");
    }
-   verbose = bool(verbose_opt);
    if (w_opt) {
       copts.emplace_back("-w");
    }

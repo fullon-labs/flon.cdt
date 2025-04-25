@@ -116,7 +116,7 @@ void print_exec_subprogram(StringRef name,  const std::vector<std::string>& new_
       llvm::outs() << "cd " << CurrDir.c_str() << " && ";
    }
 
-   const auto& path = llvm::sys::findProgramByName(name, {eosio::cdt::whereami::where()});
+   const auto& path = llvm::sys::findProgramByName(name);
    if (path) {
       llvm::outs() << "\"" << *path << "\"";
    } else {
@@ -188,7 +188,6 @@ int main(int argc, const char **argv) {
 
          new_opts.insert(new_opts.begin(), "-xc++");
          if (opts.verbose) {
-            new_opts.insert(new_opts.begin(), "-v");
             print_exec_subprogram("clang-9", new_opts, "compile");
          }
 
