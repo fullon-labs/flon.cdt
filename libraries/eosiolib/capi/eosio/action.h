@@ -188,6 +188,34 @@ capi_name current_receiver( void );
 __attribute__((eosio_wasm_import))
 void set_action_return_value(void *return_value, size_t size);
 
+/**
+ * Initialize conversation from action data to JSON compact format.
+ *
+ * @ingroup action
+ * @param contract_name - the contract name.
+ * @param action_name - the action name.
+ * @param action_data - the action data.
+ * @param action_data_size - the action data size.
+ * @param json_size - the output json size.
+ *
+ * @return the initialized convertor id. Used by final_action_data_to_json()
+ */
+__attribute__((eosio_wasm_import))
+uint64_t init_action_data_to_json(uint64_t contract_name, uint64_t action_name, const char* action_data, uint32_t action_data_size, uint64_t* json_size);
+
+/**
+ * Finalize the conversation from action data to JSON compact format.
+ *
+ * @ingroup action
+ * @param convertor_id - convertor id that created by init_action_data_to_json().
+ * @param json_output - the output of converted json compact format string.
+ * @param json_size - the output json size, it must be equal to json_size got by init_action_data_to_json().
+ *
+ */
+__attribute__((eosio_wasm_import))
+void final_action_data_to_json(const uint64_t convertor_id, char* json_output, uint64_t json_size);
+
+
 #ifdef __cplusplus
 }
 #endif

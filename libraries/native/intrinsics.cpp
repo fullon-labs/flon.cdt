@@ -295,6 +295,12 @@ extern "C" {
    void set_action_return_value( void* rv, size_t len ) {
       intrinsics::get().call<intrinsics::set_action_return_value>(rv, len);
    }
+   uint64_t init_action_data_to_json(uint64_t contract_name, uint64_t action_name, const char* action_data, uint32_t action_data_size, uint64_t* json_size) {
+      return intrinsics::get().call<intrinsics::init_action_data_to_json>(contract_name, action_name, action_data, action_data_size, json_size);
+   }
+   void final_action_data_to_json(const uint64_t convertor_id, char* json_output, uint64_t json_size) {
+      return intrinsics::get().call<intrinsics::final_action_data_to_json>(convertor_id, json_output, json_size);
+   }
    void require_recipient( capi_name name ) {
       return intrinsics::get().call<intrinsics::require_recipient>(name);
    }

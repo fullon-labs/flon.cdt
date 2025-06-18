@@ -52,6 +52,12 @@ namespace eosio {
 
          __attribute__((eosio_wasm_import))
          uint32_t get_code_hash( uint64_t account, uint32_t struct_version, char* result_buffer, size_t buffer_size );
+
+         __attribute__((eosio_wasm_import))
+         uint64_t init_action_data_to_json(uint64_t contract_name, uint64_t action_name, const char* action_data, uint32_t action_data_size, uint64_t* json_size);
+
+         __attribute__((eosio_wasm_import))
+         void final_action_data_to_json(const uint64_t convertor_id, char* json_output, uint64_t json_size);
       }
    };
 
@@ -311,6 +317,55 @@ namespace eosio {
     */
    inline bool is_account( name n ) {
       return internal_use_do_not_use::is_account( n.value );
+   }
+
+
+   /**
+    * Initialize conversation from action data to compact format JSON.
+    *
+    * @ingroup action
+    * @param contract_name - the contract name.
+    * @param action_name - the action name.
+    * @param action_data - the action data.
+    * @param action_data_size - the action data size.
+    * @param json_size - the output json size.
+    *
+    * @return the initialized convertor id. Used by final_action_data_to_json()
+    */
+   inline uint64_t init_action_data_to_json(const eosio::name& contract_name, const eosio::name& action_name, const char* action_data, uint32_t action_data_size, uint64_t* json_size) {
+      return internal_use_do_not_use::init_action_data_to_json(contract_name.value, action_name.value, action_data, action_data_size, json_size);
+   }
+
+   /**
+    * Finalize the conversation from action data to compact format JSON.
+    *
+    * @ingroup action
+    * @param convertor_id - convertor id that created by init_action_data_to_json().
+    * @param json_output - the output of converted compact format JSON.
+    * @param json_size - the output json size, it must be equal to json_size got by init_action_data_to_json().
+    *
+    */
+   inline void final_action_data_to_json(const uint64_t convertor_id, char* json_output, uint64_t json_size) {
+      internal_use_do_not_use::final_action_data_to_json(convertor_id, json_output, json_size);
+   }
+
+   /**
+    * Convert action data to compact format JSON.
+    *
+    * @ingroup action
+    * @param contract_name - the contract name.
+    * @param action_name - the action name.
+    * @param action_data - the action data.
+    * @param action_data - the action data.
+    *
+    * @return the compact format JSON string of the action data.
+    */
+   inline std::string action_data_to_json(const eosio::name& contract_name, const eosio::name& action_name, const std::vector<char> action_data) {
+      uint64_t json_size;
+      auto id = init_action_data_to_json(contract_name, action_name, action_data.data(), action_data.size(), &json_size);
+      std::string json_data(json_size, '\0');
+      final_action_data_to_json(id, json_data.data(), json_size);
+      return json_data;
    }
 
    /**

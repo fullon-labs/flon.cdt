@@ -164,6 +164,8 @@ intrinsic_macro(cancel_deferred) \
 intrinsic_macro(get_context_free_data) \
 intrinsic_macro(get_sender) \
 intrinsic_macro(set_action_return_value) \
+intrinsic_macro(init_action_data_to_json) \
+intrinsic_macro(final_action_data_to_json) \
 intrinsic_macro(add_security_group_participants) \
 intrinsic_macro(remove_security_group_participants) \
 intrinsic_macro(in_active_security_group) \

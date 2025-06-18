@@ -15,4 +15,6 @@ void test_action( void ) {
    current_receiver();
    get_code_hash(0, 0, NULL, 0);
    set_action_return_value(NULL, 0);
+   init_action_data_to_json(0, 0, NULL, 0, NULL);
+   final_action_data_to_json(0, NULL, 0);
 }
