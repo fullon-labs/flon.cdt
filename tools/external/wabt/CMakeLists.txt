@@ -33,7 +33,7 @@ option(USE_UBSAN "Use undefined behavior sanitizer" OFF)
 option(CODE_COVERAGE "Build with code coverage enabled" OFF)
 option(WITH_EXCEPTIONS "Build with exceptions enabled" OFF)
 
-if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
+if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_C_COMPILER_ID} STREQUAL "AppleClang")
   set(COMPILER_IS_CLANG 1)
   set(COMPILER_IS_GNU 0)
   set(COMPILER_IS_MSVC 0)
